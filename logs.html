@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>ESP32 Remote Serial Monitor</title>
+  <style>
+    body {
+      background: #000;
+      color: #0f0;
+      font-family: monospace;
+      padding: 20px;
+    }
+    #output {
+      background: #111;
+      padding: 10px;
+      border: 1px solid #222;
+      height: 600px;
+      overflow-y: scroll;
+      white-space: pre-wrap;
+    }
+  </style>
+</head>
+<body>
+
+<h2>ESP32 Remote Serial Monitor</h2>
+<div id="output">Waiting for logs...</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+<script>
+  const supabase = supabase.createClient(
+    "https://zbkniupntxsveedrsbqt.supabase.co",
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inpia25pdXBudHhzdmVlZHJzYnF0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM3MDY2OTIsImV4cCI6MjA3OTI4MjY5Mn0.IsFzdpacRXQDqHUGZWSbzatnKZrs5SjHKiqEvyb5uKk"
+  );
+
+  const out = document.getElementById("output");
+
+  function addLog(msg) {
+    out.innerText += "\n" + msg;
+    out.scrollTop = out.scrollHeight;
+  }
+
+  // Live Realtime listener
+  supabase
+    .channel("device_logs_stream")
+    .on(
+      "postgres_changes",
+      { event: "INSERT", schema: "public", table: "device_logs" },
+      payload => {
+        addLog(`[${payload.new.timestamp}] ${payload.new.message}`);
+      }
+    )
+    .subscribe();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,5 @@
+{
+  "name": "Attendly - Biometric School Management",
+  "description": "A comprehensive school attendance dashboard connecting ESP32 biometric hardware with a Local MySQL backend.",
+  "requestFramePermissions": []
+}
